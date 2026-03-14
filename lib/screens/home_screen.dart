@@ -2,6 +2,7 @@ import 'package:du_an_todolist/const/color.dart';
 import 'package:du_an_todolist/data/mock_tasks.dart';
 import 'package:du_an_todolist/models/task.dart';
 import 'package:du_an_todolist/models/user.dart';
+import 'package:du_an_todolist/screens/about_screen.dart';
 import 'package:du_an_todolist/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -14,13 +15,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int _currentIndex = 0;
+
   late List<Task> userTasks;
 
   @override
   void initState() {
     super.initState();
-    userTasks =
-        mockTasks.where((t) => t.userId == widget.user.id).toList();
+    userTasks = mockTasks.where((t) => t.userId == widget.user.id).toList();
   }
 
   void _toggleTask(Task task) {
@@ -59,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
+            tooltip: 'Đăng xuất',
             onPressed: () {
               Navigator.pushReplacement(
                 context,
@@ -68,64 +71,88 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Header tiến độ
-          Container(
-            width: double.infinity,
-            color: Custom_green,
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$completedCount / ${userTasks.length} nhiệm vụ hoàn thành',
-                  style: const TextStyle(color: Colors.white, fontSize: 14),
-                ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: LinearProgressIndicator(
-                    value: userTasks.isEmpty
-                        ? 0
-                        : completedCount / userTasks.length,
-                    backgroundColor: Colors.white38,
-                    valueColor:
-                        const AlwaysStoppedAnimation<Color>(Colors.white),
-                    minHeight: 8,
-                  ),
-                ),
-              ],
-            ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [_buildTasksTab(), const AboutScreen()],
+      ),
+      floatingActionButton: _currentIndex == 0
+          ? FloatingActionButton(
+              backgroundColor: Custom_green,
+              onPressed: _showAddTaskDialog,
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (index) => setState(() => _currentIndex = index),
+        selectedItemColor: Custom_green,
+        unselectedItemColor: Colors.grey,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.checklist_rounded),
+            label: 'Nhiệm vụ',
           ),
-
-          // Danh sách tasks
-          Expanded(
-            child: userTasks.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Chưa có nhiệm vụ nào!',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.all(15),
-                    itemCount: userTasks.length,
-                    itemBuilder: (context, index) {
-                      final task = userTasks[index];
-                      return _buildTaskCard(task);
-                    },
-                  ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.info_outline),
+            label: 'Giới thiệu',
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Custom_green,
-        onPressed: () {
-          _showAddTaskDialog();
-        },
-        child: const Icon(Icons.add, color: Colors.white),
-      ),
+    );
+  }
+
+  // ── Tab 0: Danh sách nhiệm vụ ──────────────────────────────────────────────
+  Widget _buildTasksTab() {
+    return Column(
+      children: [
+        // Progress header
+        Container(
+          width: double.infinity,
+          color: Custom_green,
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$completedCount / ${userTasks.length} nhiệm vụ hoàn thành',
+                style: const TextStyle(color: Colors.white, fontSize: 14),
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: LinearProgressIndicator(
+                  value: userTasks.isEmpty
+                      ? 0
+                      : completedCount / userTasks.length,
+                  backgroundColor: Colors.white38,
+                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
+                  minHeight: 8,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Task list
+        Expanded(
+          child: userTasks.isEmpty
+              ? const Center(
+                  child: Text(
+                    'Chưa có nhiệm vụ nào!',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.all(15),
+                  itemCount: userTasks.length,
+                  itemBuilder: (context, index) {
+                    return _buildTaskCard(userTasks[index]);
+                  },
+                ),
+        ),
+      ],
     );
   }
 
@@ -144,8 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: GestureDetector(
           onTap: () => _toggleTask(task),
           child: AnimatedContainer(
@@ -170,8 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            decoration:
-                task.completed ? TextDecoration.lineThrough : null,
+            decoration: task.completed ? TextDecoration.lineThrough : null,
             color: task.completed ? Colors.grey : Colors.black87,
           ),
         ),
@@ -179,17 +204,13 @@ class _HomeScreenState extends State<HomeScreen> {
           _formatDate(task.createdAt),
           style: TextStyle(color: Colors.grey.shade500, fontSize: 12),
         ),
-        trailing: Icon(
-          Icons.drag_handle,
-          color: Colors.grey.shade300,
-        ),
+        trailing: Icon(Icons.drag_handle, color: Colors.grey.shade300),
       ),
     );
   }
 
   String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final diff = now.difference(date).inDays;
+    final diff = DateTime.now().difference(date).inDays;
     if (diff == 0) return 'Hôm nay';
     if (diff == 1) return 'Hôm qua';
     return '$diff ngày trước';
@@ -213,26 +234,27 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide:
-                  BorderSide(color: Colors.grey.shade300, width: 1),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
             ),
           ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Huỷ', style: TextStyle(color: Colors.grey)),
+            child: const Text('Huỷ', style: TextStyle(color: Colors.grey)),
           ),
           ElevatedButton(
             onPressed: () {
               if (controller.text.trim().isNotEmpty) {
                 setState(() {
-                  userTasks.add(Task(
-                    id: 't_${DateTime.now().millisecondsSinceEpoch}',
-                    userId: widget.user.id,
-                    title: controller.text.trim(),
-                    createdAt: DateTime.now(),
-                  ));
+                  userTasks.add(
+                    Task(
+                      id: 't_${DateTime.now().millisecondsSinceEpoch}',
+                      userId: widget.user.id,
+                      title: controller.text.trim(),
+                      createdAt: DateTime.now(),
+                    ),
+                  );
                 });
                 Navigator.pop(ctx);
               }
