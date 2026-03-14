@@ -1,5 +1,5 @@
+import 'package:du_an_todolist/screens/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'screens/about_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const AboutScreen(),
+      home: Login_Screen(),
     );
   }
 }
