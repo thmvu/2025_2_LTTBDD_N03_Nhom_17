@@ -1,5 +1,5 @@
-import 'package:du_an_todolist/screens/login_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:du_an_todolist/screens/login_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,11 +11,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Todo App',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: Login_Screen(),
+      home: const Login_Screen(),
     );
   }
 }
