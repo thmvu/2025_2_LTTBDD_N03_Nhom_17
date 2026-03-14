@@ -103,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ── Tab 0: Danh sách nhiệm vụ ──────────────────────────────────────────────
+  //  Danh sách nhiệm vụ
   Widget _buildTasksTab() {
     return Column(
       children: [
