@@ -44,9 +44,45 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildTasksCount() {
-    return Text(
-      'tasks_count'.tr(args: [taskCount.toString()]),
-      style: const TextStyle(fontSize: 16, color: Colors.grey),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 40),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFF4B2EA2), Color(0xFF6C3FD4)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF4B2EA2).withOpacity(0.4),
+            blurRadius: 16,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            taskCount.toString(),
+            style: const TextStyle(
+              fontSize: 48,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'tasks_count_label'.tr(),
+            style: const TextStyle(
+              fontSize: 15,
+              color: Colors.white70,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -35,5 +35,6 @@
 
   "profile": "Profile",
   "task_calendar": "Task Calendar",
-  "tasks_count": "{} tasks in total"
+  "tasks_count": "{} tasks in total",
+  "tasks_count_label": "Total tasks"
 }

@@ -35,5 +35,6 @@
 
   "profile": "Hồ sơ",
   "task_calendar": "Lịch công việc",
-  "tasks_count": "Tổng {} nhiệm vụ"
+  "tasks_count": "Tổng {} nhiệm vụ",
+  "tasks_count_label": "Tổng số lượng công việc"
 }
